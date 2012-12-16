@@ -1,0 +1,19 @@
+## logs
+Logs/
+
+## Documention
+Docs/
+
+## App Specific
+Application/
+
+## Sublime-text project files
+*.sublime-project
+*.sublime-workspace
+
+## other
+*.TODO
+
+## Test Coverage Generated File
+Tests/Coverage/
+

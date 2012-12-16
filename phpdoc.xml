@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor>
+	<title>Nova Documentation</title>
+	<parser>
+		<target>Docs</target>
+		<markers>
+			<item>FIXME</item>
+			<item>TODO</item>
+		</markers>
+		<extensions>
+			<extension>php</extension>
+		</extensions>
+	</parser>
+	<transformer>
+		<target>Docs</target>
+	</transformer>
+	<transformations>
+		<template name="responsive" />
+	</transformations>
+	<files>
+		<directory>Library</directory>
+	</files>
+</phpdocumentor>
