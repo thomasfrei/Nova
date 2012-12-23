@@ -12,14 +12,24 @@
  */
 namespace Nova\Controller;
 
+// Request 
 use Nova\Controller\Request\Http as Request;
 use Nova\Controller\Request\AbstractRequest as AbstractRequest;
+
+// Response
 use Nova\Controller\Response\Http as Response;
 use Nova\Controller\Response\AbstractResponse as AbstractResponse;
+
+// Dispatcher
 use Nova\Controller\Dispatcher\Standard as Dispatcher;
 use Nova\Controller\Dispatcher\AbstractDispatcher as AbstractDispatcher;
+
+// Router
 use Nova\Controller\Router\Rewrite as Router;
+
+// Plugins
 use Nova\Controller\Plugin\Handler as PluginHandler; 
+use Nova\Controller\Plugin\AbstractPlugin as AbstractPlugin; 
 
 /**
  * Is Responsible for the Request->Response Lifecycle
@@ -263,6 +273,29 @@ Class Front
 	public function getModuleDirectory()
 	{
 		return $this->getDispatcher()->getModuleDirectory();
+	}
+
+	/**
+	 * Register a plugin with the plugin handler
+	 * @param  AbstractPlugin $plugin Instance of the plugin 	
+	 * @param  int $index index
+	 * @return Front
+	 */
+	public function registerPlugin($plugin, $index = null)
+	{
+		$this->_plugins->registerPlugin($plugin, $index);
+		return $this;
+	}
+
+	/**
+	 * Unregister a plugin with the plugin handler
+	 * @param  string|AbstractPlugin $plugin Plugin name or Instance of the plugin
+	 * @return Front
+	 */
+	public function unregisterPlugin($plugin)
+	{
+		$this->_plugins->unregisterPlugin($plugin);
+		return $this;
 	}
 
 	/**
