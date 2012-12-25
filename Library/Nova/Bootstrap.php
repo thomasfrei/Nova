@@ -31,7 +31,7 @@ Abstract Class Bootstrap
      * The Directory where traces are stored
      * @var string
      */
-    protected $tracingDir = '/var/www/Nova/Logs/trace';
+    protected $tracingDir = null; 
 
     /**
      * Profiling enabled flag
@@ -118,6 +118,9 @@ Abstract Class Bootstrap
         // if enabled start tracing
         if ($this->tracing){
             if (extension_loaded('xdebug')) {
+                if($this->tracingDir === null) {
+                    $this->tracingDir = DOCROOT . 'Logs/';
+                }
                 xdebug_start_trace($this->tracingDir);    
             } else {
                 throw new Exception('Tracing not possible. Xdebug is Not installed');
