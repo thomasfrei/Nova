@@ -151,12 +151,8 @@ Class Rewrite
 	protected function _setModule()
 	{
 		if(isset($this->_parts[0])){
-			if(is_dir(APPPATH . ucfirst(strtolower($this->_parts[0])))){
-				$this->_module = $this->_parts[0];
-				array_shift($this->_parts);
-			} else {
-				$this->_module = $this->getDefaultModule();
-			}
+			$this->_module = $this->_parts[0];
+			array_shift($this->_parts);
 		} else {
 			$this->_module = $this->getDefaultModule();
 		}
