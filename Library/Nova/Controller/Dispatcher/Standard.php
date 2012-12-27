@@ -206,23 +206,23 @@ Class Standard extends AbstractDispatcher
 		if(!class_exists($controller,false)){
 			throw new Exception("Class: " . $controller . " was not found");			
 		}
-		$controller = new $controller($request, $response);
+		$controllerClass = new $controller($request, $response);
 
-		if(!$controller instanceof Action){
+		if(!$controllerClass instanceof Action){
 			throw new Exception("Controller must extend Nova\Controller\Action");
 		}
 
 		// check if the method exists
-		$actionMethods = get_class_methods($controller);
+		$actionMethods = get_class_methods($controllerClass);
 
 		// Method does not exist
 		if(!in_array($action, $actionMethods)){
 			$action = substr($action, 0 , strlen($action) - 6);
-			throw new Exception("Invalid Method: " . $action);
+			throw new Exception($action.'Action does not exist in '.$controller);
 		}
 
 		// Call action
-		$controller->$action();
+		$controllerClass->$action();
 
 		$request->setDispatched(true);
 	}
