@@ -76,6 +76,9 @@ Abstract Class AbstractDispatcher
 	 */
 	public function getModuleDirectory()
 	{
+		if($this->_moduleDir === null){
+			$this->_moduleDir = 'Modules';
+		}
 		return $this->_moduleDir;
 	}
 
@@ -102,7 +105,7 @@ Abstract Class AbstractDispatcher
 	public function getControllerDirectory()
 	{
 		if($this->_controllerDir === null){
-			$this->_controllerDir = "/Controllers/";
+			$this->_controllerDir = "Controller";
 		}
 		
 		return $this->_controllerDir;
