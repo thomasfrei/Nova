@@ -93,8 +93,8 @@ abstract class Action{
 	{
 		//
 		$module = ucfirst($this->_request->getModuleName());
-		$controller = $this->_request->getControllerName();
-		$viewFile = APPPATH . $module . "/Views/" . $controller . ".php";
+		$controller = strtolower($this->_request->getControllerName());
+		$viewFile = APPPATH .'Modules/' . $module . "/View/" . $controller . ".php";
 
 		$this->view = new View($viewFile);
 		return $this;
