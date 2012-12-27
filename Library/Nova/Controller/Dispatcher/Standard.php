@@ -188,11 +188,12 @@ Class Standard extends AbstractDispatcher
 		}
 
 		// path to controller file
-		$path = $path . $module;
+		$path = $path . $module .DIRECTORY_SEPARATOR;
 
 		$controller = $this->formatControllerName($request->getControllerName());
 		$file = $this->classToFilename($controller);
 		$action = $this->formatActionName($request->getActionName());
+
 
 		if(!$this->isDispatchable($path, $file)){
 			$request->setDispatched(false);
@@ -200,10 +201,9 @@ Class Standard extends AbstractDispatcher
 			return;
 		}
 
-		include_once(APPPATH . $module . "/Controllers/" . DIRECTORY_SEPARATOR. $file);
+		include_once($path.$this->getControllerDirectory().DIRECTORY_SEPARATOR.$file);
 
-		if(!class_exists($controller)){
-			$controller = substr($controller, 0, strlen($controller) - 9);
+		if(!class_exists($controller,false)){
 			throw new Exception("Class: " . $controller . " was not found");			
 		}
 		$controller = new $controller($request, $response);
@@ -237,7 +237,7 @@ Class Standard extends AbstractDispatcher
 	public function isDispatchable($path, $file)
 	{
 		// Check if the module and Controller Exist
-		if(!is_dir($path) || !file_exists($path. $this->getControllerDirectory() . DIRECTORY_SEPARATOR. $file)){
+		if(!is_dir($path) || !file_exists($path.$this->getControllerDirectory().DIRECTORY_SEPARATOR.$file)){
 			return false;
 		}
 
