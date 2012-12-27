@@ -42,6 +42,7 @@ Class ErrorHandler extends AbstractPlugin
 	protected $_errorAction = "error";
 
 
+
 	/**
 	 * Called after the action is dispatched by the dispatcher
 	 *
@@ -67,21 +68,26 @@ Class ErrorHandler extends AbstractPlugin
 	{
 		if($this->getResponse()->hasException()){
 			
-			$this->getRequest()->setModuleName($this->_errorModule);
-			$this->getRequest()->setControllerName($this->_errorController);
-			$this->getRequest()->setActionName($this->_errorAction);
+			$error = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+			
+			$request = $this->getRequest();
 
+			$error->request = clone $request;
+
+			$request->setModuleName($this->_errorModule)
+					->setControllerName($this->_errorController)
+					->setActionName($this->_errorAction)
+					->setDispatched(false);
 
 
 			$exceptions = $this->_response->getException();
-			$msg = $exceptions[0]->getMessage();
+			$exception = $exceptions[0];
+
+			$error->exception = $exception;
+
 			$this->_response->SetHttpResponseCode(404);
-			
-			$this->getResponse()->removeFirstException();
-
-			var_dump($exceptions);
-
-
+			$this->_request->setParam('error_handler', $error);
+			$this->_response->removeFirstException();
 		}		
 	}
 }
