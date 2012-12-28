@@ -4,8 +4,8 @@ namespace Nova\Loader\Unittests;
 
 use Nova\Loader\Autoloader as Autoloader;
 
-include BASEPATH. "Nova/Loader/Autoloader.php";
-include BASEPATH. "Nova/Loader/Exception.php";
+include BASEPATH."Nova/Loader/Autoloader.php";
+include BASEPATH."Nova/Loader/Exception.php";
 
 class AutoloaderTest extends \PHPUnit_Framework_Testcase
 {

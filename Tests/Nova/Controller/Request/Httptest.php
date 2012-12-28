@@ -5,7 +5,11 @@ namespace Nova\Controller\Request\Unittests;
 use Nova\Controller\Request\Http as Request;
 use Nova\Controller\Request\AbstractRequest as AbstractRequest;
 
-include BASEPATH. "Nova/Controller/Request/Exception.php";
+include BASEPATH."Nova/Controller/Request/AbstractRequest.php";
+include BASEPATH."Nova/Controller/Request/Http.php";
+include BASEPATH.'Nova/Controller/Plugin/PluginInterface.php';
+include BASEPATH."Nova/Controller/Exception.php";
+include BASEPATH."Nova/Controller/Request/Exception.php";
 
 Class Httptest extends \PHPUnit_Framework_Testcase
 {

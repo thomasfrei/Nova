@@ -25,7 +25,7 @@
 		<directory>./coverage-clover</directory>
 		<directory>./testfiles</directory>
 	    </blacklist>
-	    <whitelist processUncoveredFilesFromWhitelist="false">
+	    <whitelist processUncoveredFilesFromWhitelist="true">
     		<directory suffix=".php">../Library</directory>
     	</whitelist>
 	</filter>
