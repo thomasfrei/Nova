@@ -52,7 +52,7 @@ abstract class Action{
 	{
 		$this->setRequest($request);
 		$this->setResponse($response);
-		$this->initview();
+		$this->initView();
 
 
 		// init the User Application Controller
@@ -94,32 +94,10 @@ abstract class Action{
 		//
 		$module = ucfirst($this->_request->getModuleName());
 		$controller = strtolower($this->_request->getControllerName());
-		$viewFile = APPPATH .'Modules/' . $module . "/View/" . $controller . ".php";
+		$viewPath = APPPATH.'Modules'.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'Scripts';
 
-		$this->view = new View($viewFile);
+		$this->view = new View();
+		$this->view->setScriptPath($viewPath);
 		return $this;
-	}
-
-	/**
-	 * Magic Function to set view Variables
-	 *
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function __set($key, $value)
-	{
-		$this->view->$key = $value;
-	}
-
-	/**
-	 * Destructor
-	 *
-	 * Render the view and pass it to the response
-	 */
-	public function __destruct()
-	{
-		$content = $this->view->render();
-		
-		$this->_response->setBody($content);
 	}
 }

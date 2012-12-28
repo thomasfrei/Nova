@@ -19,44 +19,14 @@ use Nova\View\AbstractView as AbstractView;
  * 
  * @package Nova
  */
-class View extends AbstractView{
-
-	/**
-	 * Path to the view script
-	 * @var string
-	 */
-	protected $_script = null;
-
-	/**
-	 * Constructor
-	 *
-	 * @param string $script
-	 */
-	public function __construct($script)
-	{
-		$this->_script = $script;
-	}
-
-	/**
-	 * Magic function to allow setting view variables
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function __set($key, $value)
-	{
-		$this->$key = $value;
-	}
-
-	/**
-	 * Render the view
-	 *
-	 * @return string
-	 */
-	public function render()
-	{
-		ob_start();
-		require $this->_script;
-		return ob_get_clean();
-	}
-
+class View extends AbstractView
+{
+    /**
+     * Include the view script
+     * @return string
+     */
+	protected function _run()
+    {
+       return include func_get_arg(0);
+    }
 }

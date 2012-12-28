@@ -203,6 +203,8 @@ Class Standard extends AbstractDispatcher
 
 		include_once($path.$this->getControllerDirectory().DIRECTORY_SEPARATOR.$file);
 
+		unset($path,$file);
+
 		if(!class_exists($controller,false)){
 			throw new Exception("Class: " . $controller . " was not found");			
 		}
@@ -221,10 +223,22 @@ Class Standard extends AbstractDispatcher
 			throw new Exception($action.'Action does not exist in '.$controller);
 		}
 
-		// Call action
-		$controllerClass->$action();
-
 		$request->setDispatched(true);
+
+		// Call action
+		ob_start();
+
+		try {
+			$controllerClass->$action();
+		} catch (\Exception $e) {
+			throw $e;
+		}
+
+		$content = ob_get_clean();
+		$this->_response->setBody($content);
+		
+		$controller = null;
+		
 	}
 
 	/**
