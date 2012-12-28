@@ -264,6 +264,21 @@ abstract Class AbstractView
         }
         return $this->_helperNs;
     }
+
+    /**
+     * Escpape a value for output in view script
+     * @see  http://ch2.php.net/manual/en/function.htmlentities.php
+     * @see  http://ch2.php.net/manual/en/function.htmlspecialchars.php
+     * @param  string $var Value to escape
+     * @return string escaped value
+     */
+    public function escape($var)
+    {
+        if (in_array($this->_escape, array('htmlentities', 'htmlspecialchars'))) {
+            return call_user_func($this->_escape, $var, ENT_COMPAT, $this->_encoding);
+        }
+    }
+
     /**
      * Render the view script and return the output
      *         

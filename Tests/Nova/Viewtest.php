@@ -133,4 +133,12 @@ Class ViewTest extends \PHPUnit_Framework_Testcase
     {
         $this->assertEquals('Nova\View\Helper\\', $this->view->getHelperNamespace());
     }
+
+    public function testEscaping()
+    {
+        $value = 'You & me';
+
+        $result = $this->view->escape($value);
+        $this->assertEquals('You &amp; me', $result);
+    }
 }
