@@ -41,18 +41,22 @@ class Handler extends AbstractPlugin
 	 * Plugins can hav an index between 1 an 100.
 	 * Index 100 is reserved for the error handler
 	 *
-	 * @param Instance of the plugin
-	 * @param int index
+	 * @param AbstractPlugin $plugin Instance of the plugin
+	 * @param int $index index
 	 * @todo Index validation
-	 * @return Nova\Controller\Plugin\Handler
+	 * @return Handler
 	 * @throws Nova\Controller\Plugin\Exception
 	 */
 	public function registerPlugin($plugin, $index = null)
 	{
 		$index = (int) $index;
 
-		if(!$plugin instanceof PluginInterface){
-			throw new Exception("Invalid plugin registered");
+		if($index < 0 OR $index > 100) {
+			throw new Exception('Index must be set to a value between 0 and 100');
+		}
+
+		if(!$plugin instanceof AbstractPlugin){
+			throw new Exception("Plugin must extend AbstractPlugin");
 		}
 
 		if((array_search($plugin, $this->_plugins, true)) !== false){
@@ -60,9 +64,9 @@ class Handler extends AbstractPlugin
 		}
 
 		// Check if this index is already in use
-		if($index !== null){
+		if($index){
 			if(isset($this->_plugins[$index])){
-				throw new Exception("Plugin with index " . $index .  "already registered");
+				throw new Exception("Plugin with index " . $index .  " already registered");
 			}
 
 			$this->_plugins[$index] = $plugin;
@@ -71,7 +75,7 @@ class Handler extends AbstractPlugin
 			while(isset($this->_plugins[$index])){
 				$index++;
 			}
-			$this->_plugins[$index] = $plugins;
+			$this->_plugins[$index] = $plugin;
 		}
 
 		// Sort the plugins 
@@ -93,6 +97,8 @@ class Handler extends AbstractPlugin
 			if($key === false){
 				throw new Exception("Plugin never registered");
 			}
+			unset($this->_plugins[$key]);
+		}elseif (is_string($plugin)) {
             foreach ($this->_plugins as $key => $_plugin) {
                 $type = get_class($_plugin);
                 if ($plugin == $type) {
@@ -100,8 +106,16 @@ class Handler extends AbstractPlugin
                 }
             }
 		}
-
 		return $this;
+	}
+
+	/**
+	 * Returns an array of all registered plugins
+	 * @return array Registered plugins
+	 */
+	public function getRegisteredPlugins()
+	{
+		return $this->_plugins;
 	}
 
 	/**
@@ -171,10 +185,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->routeStartup($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
@@ -193,10 +207,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->routeShutdown($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
@@ -215,10 +229,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->preDispatch($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
@@ -237,10 +251,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->postDispatch($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
@@ -259,10 +273,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->dispatchLoopStartup($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
@@ -281,10 +295,10 @@ class Handler extends AbstractPlugin
 			try {
 				$plugin->dispatchLoopShutdown($request);
 			} catch (Exception $e) {
-				if(Front::getInstance()->renderExceptions()){
+				if(Front::getInstance()->throwExceptions()){
 					throw new Exception($e->getMessage(). $e->getTraceAsString(), $e->getCode(), $e);
 				} else {
-					$this->getResponse()-setException($e);
+					$this->getResponse()->setException($e);
 				}
 			}
 		}
