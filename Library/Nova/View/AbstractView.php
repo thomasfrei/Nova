@@ -213,7 +213,7 @@ abstract Class AbstractView
      * Defaults to 'UTF-8'.
      * 
      * @param string $spec 
-     * @param AbstractView
+     * @return AbstractView
      */
     public function setEncoding($spec)
     {
@@ -245,7 +245,8 @@ abstract Class AbstractView
 
     /**
      * Sets the helper Namespace
-     * @param string $helperNs Namepace of helper classes
+     * @param string $helperNamespace Namepace of helper classes
+     * @return AbstractView
      */
     public function setHelperNamespace($helperNamespace)
     {
