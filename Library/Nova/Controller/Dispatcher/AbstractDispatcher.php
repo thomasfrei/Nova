@@ -42,6 +42,13 @@ Abstract Class AbstractDispatcher
 	 * @var string
 	 */
 	protected $_controllerDir = null;
+
+	/**
+	 * Dispatch Directory
+	 * @var string
+	 */
+	protected $_dispatchDirectory = null;
+
 	/**
 	 * Set Response
 	 *
@@ -52,6 +59,15 @@ Abstract Class AbstractDispatcher
 	{
 		$this->_response = $response;
 		return $this;
+	}
+
+	/**
+	 * Returns the Reponse
+	 * @return AbstractResponse
+	 */
+	public function getResponse()
+	{
+		return $this->_response;
 	}
 
 	/**
@@ -109,5 +125,25 @@ Abstract Class AbstractDispatcher
 		}
 		
 		return $this->_controllerDir;
+	}
+
+	/**
+	 * Sets the dispatch Directory
+	 * @param string $dispatchDir 
+	 * @return AbstractDispatcher
+	 */
+	public function setDispatchDirectory($dispatchDir)
+	{
+		$this->_dispatchDirectory = $dispatchDir;
+		return $this;
+	}
+
+	/**
+	 * Retrieve the dispatch directory
+	 * @return string
+	 */
+	public function getDispatchDirectory()
+	{
+		return $this->_dispatchDirectory;
 	}
 }
