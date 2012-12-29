@@ -24,8 +24,8 @@ class ErrorController extends \Nova\Controller\Action
         }
         
         $this->view->errorTrace = array_reverse($backtrace);
-  
-
+        
+        echo $this->view->render('error.php');
     }
 
 }
