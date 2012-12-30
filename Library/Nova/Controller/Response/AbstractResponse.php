@@ -54,7 +54,7 @@ Abstract Class AbstractResponse
 	 * Normalise a header string
 	 * 
 	 * input format = http-accept-encoding or http accept encoding
-	 * returnes format = HTTP_ACCEPT_ENCODING
+	 * returns format = HTTP_ACCEPT_ENCODING
 	 *
 	 * @param string $headerName
 	 * @return string $formated
@@ -63,8 +63,7 @@ Abstract Class AbstractResponse
 	{
 		$formated = str_replace(array('-', '_'), ' ', (string) $headerName);
 		$formated = ucwords(strtolower($formated));
-		$formated = str_replace(' ', '_', $formated);
-
+		$formated = str_replace(' ', '-', $formated);
 		return $formated;
 	}
 
