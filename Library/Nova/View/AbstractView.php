@@ -2,21 +2,25 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     View
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license     https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\View
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova\View;
+Namespace Nova\View;
 
 use Nova\View\Helper\AbstractHelper as AbstractHelper;
 
 /**
- * Base View Object
- * 
- * @package         Nova\View
+ * Description
+ *
+ * @package     View
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 abstract Class AbstractView
 {

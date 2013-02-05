@@ -5,27 +5,24 @@ class ErrorController extends \Nova\Controller\Action
     public function errorAction()
     {
         $this->view->title = 'Error';
-        $error = $this->_request->getParam('error_handler');
+        $error = $this->_request->getParam('error-handler');
 
+        //var_dump($error);
         $this->view->error = $error;
-        $this->view->errorFile = $error->exception->getFile();
-        $this->view->errorLine = $error->exception->getLine();
-        $this->view->errorMsg = $error->exception->getMessage();
+        $this->view->errorType = $error->type;
+        $this->view->errorFile = $error->file;
+        $this->view->errorLine = $error->line;
+        $this->view->errorMsg = $error->message;
         $this->view->params = $error->request->getParams();
 
         $counter = 0;
         $backtrace = array();
-
-        foreach($error->exception->getTrace() as $exception){
-            $backtrace[$counter]['file'] = $exception['file'];
-            $backtrace[$counter]['function'] = $exception['function'];
-            $backtrace[$counter]['line'] = $exception['line'];
-            $counter++;
-        }
         
-        $this->view->errorTrace = array_reverse($backtrace);
+        $this->view->errorTrace = $error->trace;
         
+        $this->view->test = $this->getActionParams();
         echo $this->view->render('error.php');
+
     }
 
 }

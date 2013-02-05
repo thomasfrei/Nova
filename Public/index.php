@@ -1,5 +1,5 @@
 <?php
- 
+
 /**
  * The directory in which the application specific ressources are located
  * Without trailing slash
@@ -16,9 +16,9 @@ $library = 'Library';
  * Set the Environment
  * Valid options are 
  *
- * 	- development
- * 	- testing
- * 	- production
+ *  - development
+ *  - testing
+ *  - production
  *
  * This sets according error reporting levels in the bootstrapper
  */
@@ -35,7 +35,7 @@ $tracing = true;
  * Sets the directory in which the traces are stored.
  * Format: /path/to/logs/directory/filename without file extension
  */
-$tracingDir = '/var/www/Nova/Logs/nova';
+$tracingDir = '/var/www/Nova-Incubator/Logs/nova';
 
 /**
  * This enables the internal profiler
@@ -48,7 +48,7 @@ $profiling = false;
  * PHP will complain if you don't set a timezone.
  * @link http://www.php.net/manual/timezones
  */
-date_default_timezone_set('Europe/Zurich');	
+date_default_timezone_set('Europe/Zurich'); 
 
 /**
  * This is the End of the standard Configuration
@@ -76,7 +76,7 @@ if (file_exists('Install.php')) {
 defined('NOVA_START_TIME') or define('NOVA_START_TIME', microtime(true));
 
 // Define the memory usage at the start of the application, used for profiling
-defined('NOVA_START_MEMORY') or	define('NOVA_START_MEMORY', memory_get_usage());
+defined('NOVA_START_MEMORY') or define('NOVA_START_MEMORY', memory_get_usage());
 
 // Include an setup the autoloader
 require_once(SYSPATH.'Nova/Loader/Autoloader.php');
@@ -85,18 +85,22 @@ $autoloader->register();
 
 // Configure namespaces
 $namespaces = array(
-		'Application' => APPPATH,
-	);
+        'Application' => APPPATH,
+    );
 $autoloader->registerNamespaces($namespaces);
 $autoloader->setIncludePath(array(APPPATH, SYSPATH));
 
 // Set bootstrapper options
 $options = array(
-	'tracing' 			=> $tracing,
-	'tracing.directory' => $tracingDir,
-	'profiling'			=> $profiling,
+    'tracing'           => $tracing,
+    'tracing.directory' => $tracingDir,
+    'profiling'         => $profiling,
 );
+
+//xdebug_start_trace(DOCROOT . 'Logs/');  
 
 // Start the application
 $application = new Application\Bootstrap($options);
 $application->bootstrap();
+
+//xdebug_stop_trace();

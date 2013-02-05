@@ -2,23 +2,23 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Controller\Dispatcher
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license 	https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Controller
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova\Controller\Dispatcher;
+Namespace Nova\Controller\Dispatcher;
 
 /**
- * Exception handling
- * 
- * @package 		Nova\Controller
- * @subpackage 		Dispatcher
+ * Dispatcher Exception
+ *
+ * @package     Controller\Dispatcher
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Class Exception extends \Nova\Controller\Exception
-{
-		
-}
+{}

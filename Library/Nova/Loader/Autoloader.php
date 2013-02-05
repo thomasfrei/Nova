@@ -2,48 +2,58 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Loader
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license     https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Loader
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova\Loader;
+Namespace Nova\Loader;
+
+use Nova\Loader\Autoloader as Autoloader;
 
 /**
- * Autoloader
+ * Fully PSR-0 Compatible Autoloader
  *
- * PSR-0 Compatible Autoloader
- *
- * @package  Nova\Loader
- * @subpackage Autoloader
+ * @package     Loader
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Class Autoloader
 {
     /**
-     * The extension of the files to load
+     * The Default File Extension
      * @var string
      */
-    protected $fileExtension = '.php';
+    protected $_fileExtension = '.php';
 
     /**
-     * Namespace separator
+     * The Default Namespace Separator
      * @var string
      */
-    protected $namespaceSeparator = '\\';
+    protected $_namespaceSeparator = '\\';
 
     /**
-     * An array of registered namespaces with corresponding paths
+     * Array of Registered Namespaces
      * @var array
      */
-    protected $namespaces = array();
+    protected $_namespaces = array();
 
     /**
      * Constructor
+     *
+     * Accepts an Array of Autoloader Options
+     *
+     * Valid Options are:
      * 
-     * @param null|array $options null ur array of autoloader options
+     *     - file.extension
+     *     - namespace.separator
+     *     - include.path
+     * 
+     * @param null|array $options array of options
      */
     public function __construct($options = null)
     {
@@ -63,82 +73,81 @@ Class Autoloader
     }
 
     /**
-     * Sets the namespace separator.
+     * Returns the File Extension.
      * 
-     * @param string $nsSeperator The namespace separator
-     * @return Autoloader
+     * @return string File Extension
      */
-    public function setNamespaceSeparator($nsSeperator)
+    public function getFileExtension()
     {
-        $this->namespaceSeparator = (string) $nsSeperator;
-        return $this;
+        return $this->_fileExtension;
     }
 
     /**
-     * Returns the currently used namespace separator.
-     * 
-     * @return string The namespace separator string
-     */
-    public function getNamespaceSeparator()
-    {
-        return $this->namespaceSeparator;
-    }
-
-    /**
-     * Sets the file extension the autoloader looks for when loading files.
+     * Sets the File Extension.
      * 
      * @param string $fileExtension
      * @return Autoloader
      */
     public function setFileExtension($fileExtension)
     {
-        $this->fileExtension = (string) $fileExtension;
+        $this->_fileExtension = (string) $fileExtension;
         return $this;
     }
 
     /**
-     * Returns the file extension.
+     * Returns the Namespace Separator.
      * 
-     * @return string File extension
+     * @return string Namespace Separator
      */
-    public function getFileExtension()
+    public function getNamespaceSeparator()
     {
-        return $this->fileExtension;
+        return $this->_namespaceSeparator;
     }
 
     /**
-     * Sets the include path.
+     * Sets the Namepace Separator.
      * 
-     * @param array|string $newPath string or array with the include path/paths
+     * @param string $namespaceSeparator
      * @return Autoloader
      */
-    public function setIncludePath($newPath)
+    public function setNamespaceSeparator($namespaceSeparator)
     {
-        // Get the original include path
-        $originalPath = explode(PATH_SEPARATOR, get_include_path());
+        $this->_namespaceSeparator = (string) $namespaceSeparator;
+        return $this;
+    }
 
-        // Merge the original and the new include paths
-        if (is_array($newPath)) {
-            $newPath = array_merge($originalPath, $newPath);
-        } elseif (is_string($newPath)) {
-            array_push($originalPath, $newPath);
-            $newPath = $originalPath;
+    /**
+     * Sets the Include Path. Does not Overwrite Previously set Paths.
+     * 
+     * @param array|string $newIncludePath Sting or Array with the Include Path
+     * @return Autoloader
+     */
+    public function setIncludePath($newIncludePath)
+    {
+        // Grab the Original Include Path
+        $originalPath = explode(PATH_SEPARATOR, $this->getIncludePath());
+
+        // Merge the Original and the New Include Path
+        if (is_array($newIncludePath)) {
+            $newIncludePath = array_merge($originalPath, $newIncludePath);
+        } elseif (is_string($newIncludePath)) {
+            array_push($originalPath, $newIncludePath);
+            $newIncludePath = $originalPath;
         }
 
-        if (is_array($newPath)) {
-            $newPath = implode(PATH_SEPARATOR, $newPath);
-        }
+        $newIncludePath = implode(PATH_SEPARATOR, $newIncludePath);
+        unset($originalPath);
 
-        // Set the include path
-        set_include_path($newPath);
+        // Set the New Include Path
+        set_include_path($newIncludePath);
 
         return $this;
     }
-    
+
     /**
-     * Returns the include path.
+     * Returns the Include Path.
      * 
-     * @return string The current include path
+     * @return string Include Path
      */
     public function getIncludePath()
     {
@@ -146,7 +155,7 @@ Class Autoloader
     }
 
     /**
-     * Registers the autoloader with spl_autoload.
+     * Registers the Autoloader with spl_autoload.
      * 
      * @param  boolean $throw   Whether spl_autoload_register() should throw exceptions when the autoload_function cannot be registered.
      * @param  boolean $prepend If true, spl_autoload_register() will prepend the autoloader on the autoload stack instead of appending it.
@@ -156,9 +165,9 @@ Class Autoloader
     {
         spl_autoload_register(array($this, 'loadClass'), $throw, $prepend);
     }
-    
+
     /**
-     * Removes the autoloader from the spl_autoload stack.
+     * Removes the Autoloader from the spl_autoload Stack.
      * 
      * @return void
      */
@@ -170,40 +179,30 @@ Class Autoloader
     /**
      * Register a new namespace.
      *
-     * $namespaces = array(
-     *      'Namespace\One' => 'path/to/namespace/one',
-     *      'Namespace\Two' => 'path/to/namespace/one/two',
-     * );
+     * Accepts an Array of namespace=>path.
+     * 
+     * <code>
+     *     $namespaces = array(
+     *          'One' => 'path/to/namespace/one',
+     *          'Two' => 'path/to/namespace/one/two',
+     *      );
      *
-     * $loader->registerNamespaces($namespaces); 
+     *      $loader->registerNamespaces($namespaces); 
+     * </code>
      * 
      * @param  array $namespaces array containing namespace => path
+     * @throws Exception If Namespace is Already Registered with Different Value
      * @return Autoloader
      */
     public function registerNamespaces($namespaces)
     {
         foreach ($namespaces as $namespace => $path) {
-            if (!array_key_exists($namespace, $this->namespaces)) {
-                $this->namespaces[$namespace] = $path;
-            } elseif (array_key_exists($namespace, $this->namespaces) && $this->namespaces[$namespace] !== $path) {
+            if (!array_key_exists($namespace, $this->_namespaces)) {
+                $this->_namespaces[$namespace] = $path;
+            } elseif (array_key_exists($namespace, $this->_namespaces) && $this->_namespaces[$namespace] !== $path) {
                 throw new Exception('Namespace: '.$namespace.' already registered with different value');
             }
         }
-        return $this;
-    }
-
-    /**
-     * Unregister a namespace.
-     * 
-     * @param  string $namespace name of the namespace to unregister
-     * @return Autoloader
-     */
-    public function unregisterNamespace($namespace)
-    {
-        if (isset($this->namespaces[$namespace])) {
-            unset($this->namespaces[$namespace]);
-        }
-
         return $this;
     }
 
@@ -214,53 +213,29 @@ Class Autoloader
      */
     public function getRegisteredNamespaces()
     {
-        return $this->namespaces;
+        return $this->_namespaces;
     }
 
     /**
-     * Transforms a class name to a filename
+     * Unregister a namespace.
      * 
-     * @param  string $class Classname
-     * @return string $filename Filename
+     * @param  string $namespace name of the namespace to unregister
+     * @return Autoloader
      */
-    protected function transformClassnameToFilename($class)
+    public function unregisterNamespace($namespace)
     {
-        // Transform Classnames according to PSR-0
-        $class     = ltrim($class, $this->namespaceSeparator);
-        $filename      = '';
-        $namespace = '';
-
-        // Find the classname
-        if ($last_namespace_position = strripos($class, $this->namespaceSeparator)) {
-            $namespace = substr($class, 0, $last_namespace_position);
-            $class = substr($class, $last_namespace_position + 1);
-            $class = str_replace('_', DIRECTORY_SEPARATOR, $class);
-            $filename = str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
-        }
-        $filename .= str_replace('_', DIRECTORY_SEPARATOR, $class) . $this->fileExtension;
-
-        return $filename;
-    }
-
-    /**
-     * Checks if the class is already loaded.
-     * 
-     * @param  string  $classname Name of the class
-     * @return boolean 
-     */
-    protected function isLoaded($classname)
-    {
-        if (!class_exists($classname, false)) {
-            return false;
+        if (isset($this->_namespaces[$namespace])) {
+            unset($this->_namespaces[$namespace]);
         }
 
-        return true;
+        return $this;
     }
 
     /**
-     * Autoload a class.
+     * Autoload a Class.
      * 
      * @param  string $classname Name of the class
+     * @throws Exception If The File Cannot be Found
      * @return boolean true if the file could be included
      */
     protected function loadClass($classname)
@@ -278,7 +253,7 @@ Class Autoloader
 
         // The file was not found
         if (!$file) {
-            throw new Exception('File '. $file .' could not be loaded');
+            throw new Exception('File '. $filename .' could not be loaded');
         }
 
         // include the file
@@ -288,24 +263,41 @@ Class Autoloader
     }
 
     /**
+     * Checks if the class is already loaded.
+     * 
+     * @param  string  $classname Name of the class
+     * @return boolean 
+     */
+    protected function isLoaded($classname)
+    {
+        if (!class_exists($classname, false)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Search the file against the registered namespaces aand the include path.
      * 
      * @param  string $filename Name of the file
-     * @return string|boolean $filePath false or Path to the file
+     * @return boolean|string $filePath False If the file can't be found or the full path to the File
      */
     protected function findFile($filename)
     {
+        $filePath = '';
+
         // Search with registered namespaces first
-        foreach ($this->namespaces as $namespace => $path) {
+        foreach ($this->_namespaces as $namespace => $path) {
             if ($found = (strripos($filename, $namespace) === 0)) {
+
                 $class = substr($filename, strlen($namespace));
                 $class = ltrim($class, DIRECTORY_SEPARATOR);
-                $filePath = $this->namespaces[$namespace] . $class;
-                
-                // Check if the file exists
-                if (file_exists($filePath)) {
-                    return $filePath;
-                }
+                $filePath = $this->_namespaces[$namespace] . $class;
+            }
+
+            // Check if the file exists
+            if (file_exists($filePath)) {
+                return $filePath;
             }
         }
 
@@ -316,5 +308,33 @@ Class Autoloader
 
         // The file doesn't exist
         return false;
+    }
+
+    /**
+     * Transforms Classnames to Filenames by PSR-0 Standards.
+     * 
+     * @link  https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
+     * @param  string $classname Name of the Class 
+     * @return string $filename Name of the File
+     */
+    protected function transformClassnameToFilename($classname)
+    {
+        // Transform Classnames according to PSR-0
+        $classname     = ltrim($classname, $this->_namespaceSeparator);
+        $filename      = '';
+        $namespace = '';
+
+        // Find the classnamename
+        if ($last_namespace_position = strripos($classname, $this->_namespaceSeparator)) {
+            $namespace = substr($classname, 0, $last_namespace_position);
+            $classname = substr($classname, $last_namespace_position + 1);
+            $classname = str_replace('_', DIRECTORY_SEPARATOR, $classname);
+            $filename = str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
+        }
+
+        // Underscores in classnames must be converted to Directory Separators
+        $filename .= str_replace('_', DIRECTORY_SEPARATOR, $classname) . $this->_fileExtension;
+
+        return $filename;
     }
 }

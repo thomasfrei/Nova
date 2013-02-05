@@ -2,102 +2,154 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Controller
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license 	https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Controller
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-		
-namespace Nova\Controller;
+Namespace Nova\Controller;
 
 use Nova\View as View;
-use Nova\Controller\Request\AbstractRequest as AbstractRequest;
-use Nova\Controller\Response\AbstractResponse as AbstractResponse;
+use Nova\Http\AbstractRequest as AbstractRequest;
+use Nova\Http\AbstractResponse as AbstractResponse;
 
 /**
  * Base Class for Action Controllers
- * 
- * @package Nova\Controller
+ *
+ * @package     Controller
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 abstract class Action{
 
-	/**
-	 * The Request Object
-	 * @var AbstractRequest
-	 */
-	protected $_request = null;
+    /**
+     * The Request Object
+     * @var AbstractRequest
+     */
+    protected $_request = null;
 
-	/**
-	 * The Response Object
-	 * @var AbstractResponse
-	 */
-	protected $_response = null;
+    /**
+     * The Response Object
+     * @var AbstractResponse
+     */
+    protected $_response = null;
 
-	/**
-	 * The view Object
-	 * @var Nova\View
-	 */
-	public $view = null;
+    /**
+     * Array of Action params
+     * @var array
+     */
+    protected $_actionParams = array();
 
-	/**
-	 * Contructor
-	 * 
-	 * @param AbstractRequest  $request 
-	 * @param AbstractResponse $response
-	 */
-	public function __construct(AbstractRequest $request, AbstractResponse $response)
-	{
-		$this->setRequest($request);
-		$this->setResponse($response);
-		$this->initView();
+    /**
+     * The view Object
+     * @var Nova\View
+     */
+    public $view = null;
 
+    /**
+     * Contructor
+     * 
+     * @param AbstractRequest  $request 
+     * @param AbstractResponse $response
+     * @param array $actionParams 
+     */
+    public function __construct(AbstractRequest $request, AbstractResponse $response, array $actionParams = null)
+    {
+        $this->setRequest($request)
+             ->setResponse($response)
+             ->setActionParams($actionParams)
+             ->initView()
+             ->init();      
+    }
 
-		// init the User Application Controller
-		$methods = get_class_methods($this);
+    /**
+     * Initialize Action Controller
+     * @return void
+     */
+    public function init()
+    {}
 
-		if(in_array("_init",$methods)){
-			$this->_init();
-		}
-		
-	}
+    /**
+     * Sets the Request
+     * 
+     * @param AbstractRequest $request 
+     */
+    public function setRequest(AbstractRequest $request)
+    {
+        $this->_request = $request;
+        return $this;
+    }
 
-	/**
-	 * Sets the Request
-	 * 
-	 * @param AbstractRequest $request 
-	 */
-	public function setRequest(AbstractRequest $request)
-	{
-		$this->_request = $request;
-	}
+    /**
+     * Gets the Request
+     * 
+     * @return AbstractRequest
+     */
+    public function getRequest()
+    {
+        return $this->_request();
+    }
 
-	/**
-	 * Set the Response
-	 * 
-	 * @param AbstractResponse $response
-	 */
-	public function setResponse(AbstractResponse $response)
-	{
-		$this->_response = $response;
-	}
+    /**
+     * Set the Response
+     * 
+     * @param AbstractResponse $response
+     */
+    public function setResponse(AbstractResponse $response)
+    {
+        $this->_response = $response;
+        return $this;
+    }
 
-	/**
-	 * Initialise the view 
-	 *
-	 * @return Nova\Controller\Action
-	 */
-	public function initView()
-	{
-		//
-		$module = ucfirst($this->_request->getModuleName());
-		$controller = strtolower($this->_request->getControllerName());
-		$viewPath = APPPATH.'Modules'.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'Scripts';
+    /**
+     * Gets the Response
+     * 
+     * @return AbstractResponse
+     */
+    public function getResponse()
+    {
+        return $this->_response;
+    }
 
-		$this->view = new View();
-		$this->view->setScriptPath($viewPath);
-		return $this;
-	}
+    /**
+     * Initialise the view 
+     *
+     * @return Nova\Controller\Action
+     */
+    public function initView()
+    {
+        //
+        $module = ucfirst($this->_request->getModuleName());
+        $controller = strtolower($this->_request->getControllerName());
+        $viewPath = APPPATH.'Modules'.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'Scripts';
+
+        $this->view = new View();
+        $this->view->setScriptPath($viewPath);
+        return $this;
+    }
+
+    /**
+     * Gets the Action Params
+     * 
+     * @return Array
+     */
+    public function getActionParams()
+    {
+        return $this->_actionParams;
+    }
+
+    /**
+     * Sets the Action Params
+     * 
+     * @param array $actionParams Array of Action Params
+     */
+    protected function setActionParams($actionParams)
+    {
+        $this->_actionParams = $actionParams;
+        return $this;
+    }
 }

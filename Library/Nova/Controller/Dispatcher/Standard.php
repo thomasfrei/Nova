@@ -1,286 +1,163 @@
-<?php 
+<?php
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Controller\Dispatcher
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license     https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Controller
- * @version     0.0.1 
- * */
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
+ */
 
-namespace Nova\Controller\Dispatcher;
+Namespace Nova\Controller\Dispatcher;
 
-use Nova\Controller\Request\AbstractRequest as AbstractRequest;
-use Nova\Controller\Request\Http as Request;
-use Nova\Controller\Response\Http as Response;
-use Nova\Controller\Action as Action;
+use Nova\Http\AbstractRequest;
+use Nova\Http\AbstractResponse;
+use Nova\Controller\Dispatcher\AbstractDispatcher;
 
 /**
- * Standard dispatcher
+ * Standard Dispatcher
  *
- * @package Nova\Controller
- * @subpackage Dispatcher
+ * @package     Controller\Dispatcher
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Class Standard extends AbstractDispatcher
 {
-	/**
-	 * Default module
-	 * @var string
-	 */
-	public $_defaultModule = 'default';
+    /**
+     * Transforms Classnames to Filenames
+     * 
+     * @param  string $classname Name of the Class
+     * @return string Name of the File
+     */
+    public function classToFilename($classname)
+    {
+        return $classname . '.php';
+    }
 
-	/**
-	 * Default Controller
-	 * @var string
-	 */
-	public $_defaultController = 'index';
+    /**
+     * Checks if the module exists in the  module directory
+     *  
+     * @param  string  $module Name of the module
+     * @return boolean         
+     */
+    public function isValidModule($module)
+    {
+        $moduleDir = $this->getModuleDirectory();
+        return (is_dir($moduleDir.$module)) ? true : false;
+    }
 
-	/**
-	 * Default action
-	 * @var string
-	 */
-	public $_defaultAction = 'index';
+    /**
+     * Checks if Controller exists in the module Directory
+     * 
+     * @param AbstractRequest
+     * @return boolean
+     */
+    public function isDispatchable(AbstractRequest $request)
+    {
+        // get the module directory an the module
+        $moduleDir = $this->getModuleDirectory();
+        $module = $this->formatModuleName($request->getModuleName());
 
-	/**
-	 * Formats the module name 
-	 *
-	 * @param string $unformatted unformatted module name
-	 * @return string $formatted formatted module name
-	 */
-	public function formatModuleName($unformatted)
-	{
-		$formatted= ucfirst(strtolower($unformatted));
-		return $formatted;
-	}
+        if(!$this->isValidModule($module)){
+            throw new Exception('Requested Module "'.$module. '" Could Not Be Found');
+        }
 
-	/**
-	 * Formats the controller name
-	 *
-	 * @param string $unformatted unformatted controller name
-	 * @return string $formatted formatted controller name
-	 */
-	public function formatControllerName($unformatted)
-	{
-		$formatted = ucfirst(strtolower($unformatted));
-		return $formatted . 'Controller';
-	}
+        // get the controller directory and the controller
+        $controllerDir = $this->getControllerDirectory();
+        $controller = $this->formatControllerName($request->getControllerName());
 
-	/**
-	 * Fromates the action name
-	 *
-	 * @param string $unformatted  unformatted action name
-	 * @return string $formatted action name
-	 */
-	public function formatActionName($unformatted)
-	{
-		$formatted = strtolower($unformatted);
-		return $formatted . 'Action';
-	}
+        $pathToController = $moduleDir.$module.DIRECTORY_SEPARATOR.$controllerDir;
 
-	/**
-	 * Returns the default module
-	 *
-	 * @return string 
-	 */
-	public function getDefaultModule()
-	{
-		return $this->_defaultModule;
-	}
+        // construct the filename
+        $fileName = $this->classToFilename($controller);
 
-	/**
-	 * Changes the default module
-	 *
-	 * @param string $defaultModule Default module to use
-	 * @return Standard
-	 */
-	public function setDefaultModule($defaultModule)
-	{
-		$this->_defaultModule = $defaultModule;
-		return $this;
-	}
+        // final file
+        $finalFile = $pathToController.DIRECTORY_SEPARATOR.$fileName;
 
-	/**
-	 * Returns the default controller
-	 *
-	 * @return string 
-	 */
-	public function getDefaultController()
-	{
-		return $this->_defaultController;
-	}
+        if(!is_dir($pathToController) || !file_exists($finalFile)) {
+            return false;
+        }
 
-	/**
-	 * Changes the default controller
-	 *
-	 * @param string $defaultController Default controller to use
-	 * @return void
-	 */
-	public function setDefaultController($defaultController)
-	{
-		$this->_defaultController = $defaultController;
-		return $this;
-	}
+        $this->setDispatchDirectory($pathToController.DIRECTORY_SEPARATOR);
+        return true;
+    }
 
-	/**
-	 * Returns the default action
-	 *
-	 * @return string 
-	 */
-	public function getDefaultAction()
-	{
-		return $this->_defaultAction;
-	}
+    /**
+     * Dispatch the request 
+     * 
+     * @param  AbstractRequest  $request Request Object
+     * @param  AbstractResponse $response Response Object
+     * @throws Nova\Controller\Dispatcher\Exception
+     * @return Void
+     */
+    public function dispatch(AbstractRequest $request, AbstractResponse $response)
+    {
+        $this->setResponse($response);
 
-	/**
-	 * Change the default action 
-	 *
-	 * @param string $defaultAction Default action to use
-	 * @return  Standard
-	 */
-	public function setDefaultAction($defaultAction)
-	{
-		$this->_defaultAction = $defaultAction;
-		return $this;
-	}
+        if(!$this->isDispatchable($request)){
+            $request->setDispatched(false);
+            $controller = $this->formatControllerName($request->getControllerName());
+            throw new Exception('Controller File: '.$controller.' not found');
+            
+        }
 
-	/**
-	 * Format classname to Filename
-	 *
-	 * @param  string Unformatted Classname
-	 * @return string Formatted Filename
-	 */
-	public function classToFilename($class)
-	{
-		return $class . '.php';
-	}
+        $controller = $this->formatControllerName($request->getControllerName());
 
-	/**
-	 * Checks if the module exists in the  module directory
-	 * 	
-	 * @param  string  $module Name of the module
-	 * @return boolean         
-	 */
-	public function isValidModule($module)
-	{
-		$moduleDir = $this->getModuleDirectory();
-		//echo $moduleDir.$module;
-		return (is_dir($moduleDir.$module)) ? true : false;
-	}
+        $this->loadController($controller);
+        
+        if(!class_exists($controller,false)){
+            throw new Exception('Class: '.$controller.' not found');            
+        }
 
-	/**
-	 * Dispatch the request 
-	 * 
-	 * @param  Request  $request Request Object
-	 * @param  Response $response Response Object
-	 * @throws Nova\Controller\Dispatcher\Exception
-	 * @return Void
-	 */
-	public function dispatch(Request $request, Response $response)
-	{
-		$this->setResponse($response);
+        $controllerClass = new $controller($request, $this->getResponse(), $request->getParam('actionParams'));
 
-		$module = $this->formatModuleName($request->getModuleName());
-		
-		if(!$this->isValidModule($module)){
-			throw new Exception("Invalid Module " . $module);
-		} 
+        if(!$controllerClass instanceof \Nova\Controller\Action){
+            throw new Exception("Controller must extend Nova\Controller\Action");
+        }
+        
+        // Extract the requested action
+        $action = $this->formatActionName($request->getActionName());
 
-		if(!$this->isDispatchable($request)){
-			$request->setDispatched(false);
-			$controller = $this->formatControllerName($request->getControllerName());
-			throw new Exception('Controller File: '.$controller.' not found');
-			
-		}
+        // check if the method exists
+        $actionMethods = get_class_methods($controllerClass);
 
-		$controller = $this->formatControllerName($request->getControllerName());
+        // Method does not exist
+        if(!in_array($action, $actionMethods)){
+            $action = substr($action, 0 , strlen($action) - 6);
+            throw new Exception($action.'Action does not exist in '.$controller);
+        }
 
-		$this->loadController($controller);
-		
-		if(!class_exists($controller,false)){
-			throw new Exception('Class: '.$controller.' not found');			
-		}
+        $request->setDispatched(true);
 
-		$controllerClass = new $controller($request, $response);
+        // Call action
+        ob_start();
 
-		if(!$controllerClass instanceof Action){
-			throw new Exception("Controller must extend Nova\Controller\Action");
-		}
-		
-		// Extract the requested action
-		$action = $this->formatActionName($request->getActionName());
+        try {
+            $controllerClass->$action();
+        } catch (\Exception $e) {
+            throw $e;
+        }
 
-		// check if the method exists
-		$actionMethods = get_class_methods($controllerClass);
+        $content = ob_get_clean();
+        $this->_response->setBody($content);
+        
+        $controllerClass = null;
+    }
 
-		// Method does not exist
-		if(!in_array($action, $actionMethods)){
-			$action = substr($action, 0 , strlen($action) - 6);
-			throw new Exception($action.'Action does not exist in '.$controller);
-		}
+    /**
+     * Load the Requested controller
+     * @param  string $className Name of the controller class
+     * @return void
+     */
+    public function loadController($className)
+    {
+        // Get the dispatch directory
+        $dispatchDir = $this->getDispatchDirectory();
+        $fileName = $this->classToFilename($className);
 
-		$request->setDispatched(true);
-
-		// Call action
-		ob_start();
-
-		try {
-			$controllerClass->$action();
-		} catch (\Exception $e) {
-			throw $e;
-		}
-
-		$content = ob_get_clean();
-		$this->_response->setBody($content);
-		
-		$controllerClass = null;
-	}
-
-	/**
-	 * Checks if Controller exists in the module Directory
-	 * 
-	 * @param AbstractRequest
-	 * @return boolean
-	 */
-	public function isDispatchable(AbstractRequest $request)
-	{
-		// get the module directory an the module
-		$moduleDir = $this->getModuleDirectory();
-		$module = $this->formatModuleName($request->getModuleName());
-
-		// get the controller directory and the controller
-		$controllerDir = $this->getControllerDirectory();
-		$controller = $this->formatControllerName($request->getControllerName());
-
-		$pathToController = $moduleDir.$module.DIRECTORY_SEPARATOR.$controllerDir;
-
-		// construct the filename
-		$fileName = $this->classToFilename($controller);
-
-		// final file
-		$finalFile = $pathToController.DIRECTORY_SEPARATOR.$fileName;
-
-		if(!is_dir($pathToController) || !file_exists($finalFile)) {
-			return false;
-		}
-
-		$this->setDispatchDirectory($pathToController.DIRECTORY_SEPARATOR);
-		return true;
-	}
-
-	/**
-	 * Load the Requested controller
-	 * @param  string $className Name of the controller class
-	 * @return void
-	 */
-	public function loadController($className)
-	{
-		// Get the dispatch directory
-		$dispatchDir = $this->getDispatchDirectory();
-		$fileName = $this->classToFilename($className);
-
-		require_once($dispatchDir.$fileName);
-	}
-
+        require_once($dispatchDir.$fileName);
+    }
 }

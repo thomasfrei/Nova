@@ -2,37 +2,28 @@
 /**
  * Nova - PHP 5 Framework
  *
- * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license     https://github.com/thomasfrei/nova/blob/master/License.txt 
  * @package     Nova
- * @version     0.0.1 
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova;
+Namespace Nova;
 
 use Nova\Controller\Front as Front;
 
 /**
- * Bootstrap
+ * Description
  *
- * @package Nova     
+ * @package     Nova
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Abstract Class Bootstrap
 {
-    /**
-     * Tracing enabled flag
-     * @var boolean
-     */
-    protected $tracing = false;
-
-    /**
-     * The Directory where traces are stored
-     * @var string
-     */
-    protected $tracingDir = null; 
-
     /**
      * Profiling enabled flag
      * @var boolean
@@ -43,7 +34,7 @@ Abstract Class Bootstrap
      * Array of init methods in the Application bootstrap
      * @var array
      */
-    protected $initMethods = array();
+    protected $_initMethods = array();
 
     /**
      * Constructor
@@ -54,8 +45,8 @@ Abstract Class Bootstrap
         if ($options !== null) {
             $this->setOptions($options);
         }
-
-        $this->getInitMethods();
+        
+        $this->setInitMethods();
     }
 
     /**
@@ -65,14 +56,6 @@ Abstract Class Bootstrap
      */
     public function setOptions($options)
     {
-        if (array_key_exists('tracing', $options)) {
-            if(array_key_exists('tracing.directory', $options)) {
-                $this->setTracing($options['tracing'], $options['tracing.directory']);
-            } else {
-                $this->setTracing($options['tracing']);
-            }
-        }
-
         if (array_key_exists('profiling', $options)){
             $this->setProfiling($options['profiling']);
         }
@@ -92,20 +75,13 @@ Abstract Class Bootstrap
     }
 
     /**
-     * Sets the tracing flag.
+     * Is Profiling Enabled ?
      * 
-     * @param boolean $flag
-     * @param string $directory Directory where traces are stored
-     * @return Bootstrap
+     * @return boolean 
      */
-    public function setTracing($flag, $directory = null)
+    public function getProfiling()
     {
-        if($directory !== null) {
-            $this->tracingDir = $directory;
-        }
-
-        $this->tracing = $flag;
-        return $this;
+        return $this->profiling;
     }
 
     /**
@@ -115,18 +91,6 @@ Abstract Class Bootstrap
      */
     public function Bootstrap()
     {
-        // if enabled start tracing
-        if ($this->tracing){
-            if (extension_loaded('xdebug')) {
-                if($this->tracingDir === null) {
-                    $this->tracingDir = DOCROOT . 'Logs/';
-                }
-                xdebug_start_trace($this->tracingDir);    
-            } else {
-                throw new Exception('Tracing not possible. Xdebug is Not installed');
-            } 
-        }
-
         // Set the error reposting 
         $this->setErrorReporting();
 
@@ -137,7 +101,7 @@ Abstract Class Bootstrap
         $frontController->setModuleDirectory(APPPATH.'Modules'.DIRECTORY_SEPARATOR);
 
         // Run init methods from application bootstrap
-        foreach ($this->initMethods as $method) {
+        foreach ($this->_initMethods as $method) {
             $this->$method();
         }
 
@@ -148,11 +112,6 @@ Abstract Class Bootstrap
         
         // Run application
         $frontController->dispatch();
-
-        // End Tracing 
-        if($this->tracing){
-            xdebug_stop_trace();
-        }
     }
 
     /**
@@ -160,13 +119,13 @@ Abstract Class Bootstrap
      * 
      * @return Bootstrap
      */
-    public function getInitMethods()
+    public function setInitMethods()
     {
         $methods = get_class_methods($this);
 
         foreach($methods as $method){
            if (4 < strlen($method) && substr($method, 0, 4) === 'init') {
-                    $this->initMethods[strtolower(substr($method, 4))] = $method;
+                    $this->_initMethods[strtolower(substr($method, 4))] = $method;
                 }
         }
 

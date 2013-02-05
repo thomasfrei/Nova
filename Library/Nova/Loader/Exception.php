@@ -2,23 +2,23 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Loader
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license 	https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Loader
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova\Loader;
+Namespace Nova\Loader;
 
 /**
- * Exception handling
- * 
- * @package 		Nova\Controller
- * @subpackage 		Exception	
+ * Exception
+ *
+ * @package     Loader
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Class Exception extends \Nova\Exception
-{
-		
-}
+{}

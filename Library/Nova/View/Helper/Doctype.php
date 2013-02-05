@@ -10,7 +10,7 @@
  * @version     0.0.1 
  */
 
-namespace Nova\View\Helper;
+Namespace Nova\View\Helper;
 
 /**
  * Doctype Helper
@@ -108,7 +108,7 @@ class Doctype {
 		} else {
 			$this->setDoctype($this->_defaultDoctype);
 		}
-		return $this;
+		return $this->_doctype;
 	}
 
 	/**
@@ -135,7 +135,6 @@ class Doctype {
 	/**
 	 * __toString
 	 *
-	 * @todo  shoul go in an abstract helper class
 	 * @return string
 	 */
 	public function __toString()

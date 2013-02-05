@@ -2,12 +2,11 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     View
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license 	https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
 namespace Nova;
@@ -15,9 +14,13 @@ namespace Nova;
 use Nova\View\AbstractView as AbstractView;
 
 /**
- * View Class
- * 
- * @package Nova
+ * Description
+ *
+ * @package     View
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 class View extends AbstractView
 {
@@ -25,7 +28,7 @@ class View extends AbstractView
      * Include the view script
      * @return string
      */
-	protected function _run()
+    protected function _run()
     {
        return include func_get_arg(0);
     }

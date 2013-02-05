@@ -2,148 +2,246 @@
 /**
  * Nova - PHP 5 Framework
  *
+ * @package     Controller\Dispatcher
  * @author      Thomas Frei <thomast.frei@gmail.com>
- * @copyright   2012 Thomas Frei
- * @link        https://github.com/thomasfrei/nova
- * @license 	https://github.com/thomasfrei/nova/blob/master/License.txt 
- * @package     Nova\Controller
- * @version     0.0.1 
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 
-namespace Nova\Controller\Dispatcher;
-
-use Nova\Controller\Response\AbstractResponse as Response;
+Namespace Nova\Controller\Dispatcher;
 
 /**
- * Abtsract Dispatcher
- * 
- * @package  Nova\Controller
- * @subpackage  Dispatcher
+ * Base Dispatcher Class
+ *
+ * @package     Controller\Dispatcher
+ * @author      Thomas Frei <thomast.frei@gmail.com>
+ * @copyright   2013 Thomas Frei
+ * @license     https://github.com/thomasfrei/Nova/blob/master/License.txt 
+ * @link        https://github.com/thomasfrei/Nova
  */
 Abstract Class AbstractDispatcher
 {
-	/**
-	 * Response
-	 *
-	 * @var Response
-	 */
-	protected $_response = null;
+    /**
+     * Default module
+     * @var string
+     */
+    public $_defaultModule = 'home';
 
-	/**
-	 * Module Directory
-	 *
-	 * @var string
-	 */
-	protected $_moduleDir = null;
+    /**
+     * Default Controller
+     * @var string
+     */
+    public $_defaultController = 'index';
 
-	/**
-	 * Controller Directory
-	 *
-	 * @var string
-	 */
-	protected $_controllerDir = null;
+    /**
+     * Default action
+     * @var string
+     */
+    public $_defaultAction = 'index';
 
-	/**
-	 * Dispatch Directory
-	 * @var string
-	 */
-	protected $_dispatchDirectory = null;
+    /**
+     * Module Directory
+     * @var string
+     */
+    protected $_moduleDirectory = null;
 
-	/**
-	 * Set Response
-	 *
-	 * @param Response $response
-	 * @return AbstractDispatcher
-	 */
-	public function setResponse(Response $response)
-	{
-		$this->_response = $response;
-		return $this;
-	}
+    /**
+     * Controller Directory
+     * @var string
+     */
+    protected $_controllerDirectory = null;
 
-	/**
-	 * Returns the Reponse
-	 * @return AbstractResponse
-	 */
-	public function getResponse()
-	{
-		return $this->_response;
-	}
+    /**
+     * Set the Response
+     * 
+     * @param AbstractResponse $response 
+     * @return AbstractDispatcher
+     */
+    public function setResponse($response)
+    {
+        $this->_response = $response;
+        return $this;
+    }
 
-	/**
-	 * Set the module directory
-	 *
-	 * @param string
-	 * @return AbstractDispatcher
-	 */
-	public function setModuleDirectory($dir)
-	{
-		if(is_dir($dir)){
-			$this->_moduleDir = $dir;
-		}
+    /**
+     * Returns the Response
+     * 
+     * @return AbstractResponse
+     */
+    public function getResponse()
+    {
+        return $this->_response;
+    }
 
-		return $this;
-	}
+    /**
+     * Returns the Defaultmodule
+     * 
+     * @return string Default Module
+     */
+    public function getDefaultModule()
+    {
+        return $this->_defaultModule;
+    }
 
-	/**
-	 * Get the module directory
-	 *
-	 * @return string 
-	 */
-	public function getModuleDirectory()
-	{
-		if($this->_moduleDir === null){
-			$this->_moduleDir = 'Modules';
-		}
-		return $this->_moduleDir;
-	}
+    /**
+     * Sets the Default Module
+     * 
+     * @param string $module Default Module
+     * @return Standard
+     */
+    public function setDefaultModule($module)
+    {
+        $this->_defaultModule = (string) $module;
+        return $this;
+    }
 
-	/**
-	 * Set the controller directory
-	 *
-	 * @param string
-	 * @return AbstractDispatcher
-	 */
-	public function setControllerDirectory($dir)
-	{
-		if(is_dir($dir)){
-			$this->_controllerDir = $dir;
-		}
+    /**
+     * Get the Default Controller
+     * 
+     * @return string Default Controller
+     */
+    public function getDefaultController()
+    {
+        return $this->_defaultController;
+    }
 
-		return $this;
-	}
+    /**
+     * Sets the Default Controller
+     * 
+     * @param string $controller Deafult Controller
+     * @return Standard
+     */
+    public function setDefaultController($controller)
+    {
+        $this->_defaultController = (string) $controller;
+        return $this;
+    }
 
-	/**
-	 * Get the controller directory
-	 *
-	 * @return string 
-	 */
-	public function getControllerDirectory()
-	{
-		if($this->_controllerDir === null){
-			$this->_controllerDir = "Controller";
-		}
-		
-		return $this->_controllerDir;
-	}
+    /**
+     * Gets the Default Action Method
+     * 
+     * @return string Default Action
+     */
+    public function getDefaultAction()
+    {
+        return $this->_defaultAction;
+    }
 
-	/**
-	 * Sets the dispatch Directory
-	 * @param string $dispatchDir 
-	 * @return AbstractDispatcher
-	 */
-	public function setDispatchDirectory($dispatchDir)
-	{
-		$this->_dispatchDirectory = $dispatchDir;
-		return $this;
-	}
+    /**
+     * Sets The Default Action
+     * 
+     * @param string $action Default Action
+     * @return Standard
+     */
+    public function setDefaultAction($action)
+    {
+        $this->_defaultAction = (string) $action;
+        return $this;
+    }
 
-	/**
-	 * Retrieve the dispatch directory
-	 * @return string
-	 */
-	public function getDispatchDirectory()
-	{
-		return $this->_dispatchDirectory;
-	}
+    /**
+     * Format the Module Name
+     * 
+     * @param  string $module Unformated Module Name
+     * @return string $module Formated Module Name
+     */
+    public function formatModuleName($module)
+    {
+        $module = (string) ucfirst(strtolower($module));
+        return $module;
+    }
+
+    /**
+     * Format the Controller name
+     * 
+     * @param  string $controller Unformated Controller Name
+     * @return string $controller Formated Controller name
+     */
+    public function formatControllerName($controller)
+    {
+        $controller = (string) ucfirst(strtolower($controller));
+        return $controller . 'Controller';
+    }
+
+    /**
+     * Format The Action Name
+     * 
+     * @param  string $action Unformated Action Name
+     * @return string $action Formated Action Name
+     */
+    public function formatActionName($action)
+    {
+        $action = (string) strtolower($action);
+        return $action . 'Action';
+    }
+
+    /**
+     * Sets the Module Directory
+     * 
+     * @param string $moduleDir Path to Modules
+     */
+    public function setModuleDirectory($moduleDir)
+    {
+        $this->_moduleDirectory = (string) $moduleDir;
+        return $this;
+    }
+
+    /**
+     * Gets the Module Directory
+     * 
+     * @return string Module Directory
+     */
+    public function getModuleDirectory()
+    {
+        return $this->_moduleDirectory;
+    }
+
+    /**
+     * Sets the Controller Directory
+     * 
+     * @param string $controllerDir Controller Directory
+     */
+    public function setControllerDirectory($controllerDir)
+    {
+        $this->_controllerDirectory = (string) $controllerDir;
+        return $this;
+    }
+
+    /**
+     * Gets the ControllerDirectory
+     * 
+     * @return string Controller Directory
+     */
+    public function getControllerDirectory()
+    {
+        if ($this->_controllerDirectory === null){
+            $this->_controllerDirectory = 'Controller';
+        }
+
+        return $this->_controllerDirectory;
+    }
+
+    /**
+     * Sets the Dispatch Directory
+     * 
+     * @param string $dispatchDir Dispatch Directory
+     * @return AbstractDispatcher
+     */
+    public function setDispatchDirectory($dispatchDir)
+    {
+        $this->_dispatchDirectory = (string) $dispatchDir;
+        return $this;
+    }
+
+    /**
+     * Gets the Dispatch Directory
+     * 
+     * @return string Dispatch Directory
+     */
+    public function getDispatchDirectory()
+    {
+        return $this->_dispatchDirectory;
+    }
+
 }
