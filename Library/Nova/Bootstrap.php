@@ -38,7 +38,9 @@ Abstract Class Bootstrap
 
     /**
      * Constructor
+     *
      * @param null|array $options Null or an array of options
+     * @return void
      */
     public function __construct($options = null)
     {
@@ -51,6 +53,7 @@ Abstract Class Bootstrap
 
     /**
      * Set Bootstrap options
+     *
      * @param array $options Array of options
      * @return Bootstrap
      */
@@ -59,6 +62,7 @@ Abstract Class Bootstrap
         if (array_key_exists('profiling', $options)){
             $this->setProfiling($options['profiling']);
         }
+
         return $this;
     }
 
@@ -87,7 +91,8 @@ Abstract Class Bootstrap
     /**
      * Bootstrap the Application
      *
-     * @throws Nova\Exception if tracing enabled but xdebug not installed
+     * @return void
+     * @todo Implement Profiler Plugin
      */
     public function Bootstrap()
     {
@@ -107,7 +112,7 @@ Abstract Class Bootstrap
 
         // If profiling is enabled, register the profiler with the front controller
         if($this->profiling){
-            $frontController->registerPlugin(new \Nova\Controller\Plugin\Profiler());
+            // $frontController->registerPlugin(new \Nova\Controller\Plugin\Profiler());
         }
         
         // Run application
@@ -119,7 +124,7 @@ Abstract Class Bootstrap
      * 
      * @return Bootstrap
      */
-    public function setInitMethods()
+    protected function setInitMethods()
     {
         $methods = get_class_methods($this);
 
@@ -138,7 +143,7 @@ Abstract Class Bootstrap
      * @return void
      * @throws  Nova\Exception if invalid ENVIRONMENT constant
      */
-    public function setErrorReporting()
+    protected function setErrorReporting()
     {
         switch(ENVIRONMENT)
         {
