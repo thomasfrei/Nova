@@ -14,6 +14,7 @@ Namespace Nova\Controller;
 use Nova\View as View;
 use Nova\Http\AbstractRequest as AbstractRequest;
 use Nova\Http\AbstractResponse as AbstractResponse;
+use Nova\Controller\Action\HelperHandler as HelperHandler;
 
 /**
  * Base Class for Action Controllers
@@ -45,10 +46,15 @@ abstract class Action{
     protected $_actionParams = array();
 
     /**
-     * The view Object
-     * @var Nova\View
+     * Helper Handler
+     * @var HelperHandler
      */
-    public $view = null;
+    protected $_helper = null;
+    /**
+     * The view Object
+     * @var View
+     */
+    public $view;
 
     /**
      * Contructor
@@ -61,13 +67,14 @@ abstract class Action{
     {
         $this->setRequest($request)
              ->setResponse($response)
-             ->setActionParams($actionParams)
-             ->initView()
-             ->init();      
+             ->setActionParams($actionParams);
+        $this->_helper = new HelperHandler($this);
+        $this->init();
     }
 
     /**
      * Initialize Action Controller
+     * 
      * @return void
      */
     public function init()
@@ -91,13 +98,14 @@ abstract class Action{
      */
     public function getRequest()
     {
-        return $this->_request();
+        return $this->_request;
     }
 
     /**
      * Set the Response
      * 
      * @param AbstractResponse $response
+     * @return Action
      */
     public function setResponse(AbstractResponse $response)
     {
@@ -116,23 +124,6 @@ abstract class Action{
     }
 
     /**
-     * Initialise the view 
-     *
-     * @return Nova\Controller\Action
-     */
-    public function initView()
-    {
-        //
-        $module = ucfirst($this->_request->getModuleName());
-        $controller = strtolower($this->_request->getControllerName());
-        $viewPath = APPPATH.'Modules'.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'Scripts';
-
-        $this->view = new View();
-        $this->view->setScriptPath($viewPath);
-        return $this;
-    }
-
-    /**
      * Gets the Action Params
      * 
      * @return Array
@@ -146,10 +137,35 @@ abstract class Action{
      * Sets the Action Params
      * 
      * @param array $actionParams Array of Action Params
+     * @return Action
      */
     protected function setActionParams($actionParams)
     {
         $this->_actionParams = $actionParams;
         return $this;
+    }
+
+    /**
+     * Dispatch the action method
+     * 
+     * @param string $action Name of the action method
+     * @return void
+     */
+    public function dispatch($action)
+    {
+        // Register ViewRenderer
+        $this->_helper->registerHelper(new \Nova\Controller\Action\Helper\ViewRenderer());
+
+        // Initialise helpers
+        $this->_helper->init();
+
+        // pre Dispatch
+        $this->_helper->preDispatch();
+
+        // Run Action Method
+        $this->$action();
+   
+        // post Dispatch
+        $this->_helper->postDispatch();
     }
 }

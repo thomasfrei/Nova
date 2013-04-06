@@ -31,6 +31,12 @@ abstract Class AbstractView
     protected $_script;
 
     /**
+     * The base view path
+     * @var string
+     */
+    protected $_baseViewPath;
+
+    /**
      * The path to the view Script
      * @var string
      */
@@ -104,6 +110,7 @@ abstract Class AbstractView
 
     /**
      * Prevent Error for nonexisting keys
+     *
      * @param string $key 
      * @return null
      */
@@ -114,6 +121,7 @@ abstract Class AbstractView
 
     /**
      * Access a view helper
+     *
      * @param  string $name name of the view helper
      * @param  array $args The Parameters for the helper
      * @return string The helper output
@@ -130,6 +138,7 @@ abstract Class AbstractView
 
     /**
      * Allows testing with empty() and isset() inside view scripts
+     *
      * @param  string  $key 
      * @return boolean
      */
@@ -144,6 +153,7 @@ abstract Class AbstractView
 
     /**
      * Unset a object property
+     *
      * @param string $key 
      * @return  void
      */
@@ -156,6 +166,7 @@ abstract Class AbstractView
 
     /**
      * Return all assigned view Variables
+     *
      * @return array Array of assigned variables
      */
     public function getVars()
@@ -171,13 +182,45 @@ abstract Class AbstractView
     }
 
     /**
+     * Set the Base view Path
+     *
+     * @param string $basePath
+     * @return View
+     */
+    public function setViewBasePath($basePath)
+    {
+        $this->_baseViewPath = $basePath;
+        $this->setPaths($basePath, 'Script');
+
+        return $this;
+    }
+
+    /**
+     * Sets the View Paths
+     * @param string $basePath Base View Path
+     * @param string $type     type of path (scripts/helper/filter)
+     */
+    public function setPaths($basePath, $type)
+    {
+        $type = ucfirst(strtolower($type));
+
+        switch($type)
+        {
+            case 'Script':
+                $this->setScriptPath($basePath);
+                break;
+        }
+        return $this;
+    }
+
+    /**
      * Set the Script path
      * @param string $path
      * @return AbstractView
      */
     public function setScriptPath($path)
     {
-        $this->_scripPath = $path;
+        $this->_scripPath = $path. DIRECTORY_SEPARATOR . 'Scripts';
         return $this;
     }
 
@@ -292,6 +335,7 @@ abstract Class AbstractView
      */
     public function render($scriptName)
     {
+        $scriptName = ucfirst(strtolower($scriptName));
         $this->_script = $this->_findScript($scriptName);
 
         ob_start();

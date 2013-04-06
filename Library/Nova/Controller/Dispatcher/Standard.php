@@ -136,13 +136,13 @@ Class Standard extends AbstractDispatcher
         ob_start();
 
         try {
-            $controllerClass->$action();
+            $controllerClass->dispatch($action);
         } catch (\Exception $e) {
             throw $e;
         }
 
         $content = ob_get_clean();
-        $this->_response->setBody($content);
+        $this->_response->appendBody($content);
         
         $controllerClass = null;
     }
