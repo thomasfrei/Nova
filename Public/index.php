@@ -25,19 +25,6 @@ $library = 'Library';
 $environment = 'development';
 
 /**
- * This enables the function trace feature from xdebug and
- * should only be enabled in a development environment
- * @link http://xdebug.org/docs/execution_trace
- */
-$tracing = true;
-
-/**
- * Sets the directory in which the traces are stored.
- * Format: /path/to/logs/directory/filename without file extension
- */
-$tracingDir = '/var/www/Nova-Incubator/Logs/nova';
-
-/**
  * This enables the internal profiler
  * Should only be enabled in a development environment
  * @todo Profiler Plugin doesn't exist yet
@@ -92,15 +79,13 @@ $autoloader->setIncludePath(array(APPPATH, SYSPATH));
 
 // Set bootstrapper options
 $options = array(
-    'tracing'           => $tracing,
-    'tracing.directory' => $tracingDir,
     'profiling'         => $profiling,
 );
 
-//xdebug_start_trace(DOCROOT . 'Logs/');  
+// xdebug_start_trace(DOCROOT . 'Logs/trace');  
 
 // Start the application
 $application = new Application\Bootstrap($options);
 $application->bootstrap();
 
-//xdebug_stop_trace();
+// xdebug_stop_trace();
