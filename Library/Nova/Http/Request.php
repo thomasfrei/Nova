@@ -25,8 +25,8 @@ use Nova\Http\AbstractRequest as AbstractRequest;
  * @todo        Implement isDELETE()
  * @todo        Implement isHEAD()
  * @todo        Implement isOPTIONS()
- * @todo        Implement isXmlHttpRequest()
- * @todo        Implement GETcOOKIE()
+ * @todo        Implement setQuery()
+ * @todo        Implement getCookie()
  */
 Class Request extends AbstractRequest
 {
@@ -136,7 +136,7 @@ Class Request extends AbstractRequest
     /**
      * Retrieve a Value of the $_POST Superglobal.
      * 
-     * Returns Entire $_SERVER Array if Key has a Value of null.
+     * Returns Entire $_POST Array if Key has a Value of null.
      * 
      * @param  mixed $key
      * @param  mixed $default Default Value to Return if Key is not found
@@ -152,7 +152,26 @@ Class Request extends AbstractRequest
     }
 
     /**
+     * Retrieve a Value of the $_GET Superglobal.
+     * 
+     * Return entire $_GET array if kex has a value of null
+     *
+     * @param mixed $key
+     * @param mixed $default Default value to return if key is not found
+     * @return mixed
+     */
+    public function getQuery($key = null, $default = null)
+    {
+        if ($key === null) {
+            return $_GET;
+        }
+
+        return (isset($_GET[$key])) ? $_GET[$key] : $default;
+    }
+
+    /**
      * Returns The Request Method
+     *
      * @return string Request Method
      */
     public function getMethod()
@@ -162,6 +181,7 @@ Class Request extends AbstractRequest
 
     /**
      * Is this a POST Request ?
+     *
      * @return boolean 
      */
     public function isPost()
@@ -171,10 +191,21 @@ Class Request extends AbstractRequest
 
     /**
      * Is this a GET Request ?
+     *
      * @return boolean
      */
     public function isGet()
     {
         return ($this->getMethod() === 'GET');
+    }
+
+    /**
+     * Is the request a javascript XmlHttpRequest ?
+     * 
+     * @return boolean
+     */
+    public function isXmlHttpRequest()
+    {
+        return ($this->getServer('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest');
     }
 }

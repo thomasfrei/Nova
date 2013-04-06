@@ -108,6 +108,11 @@ Class RequestTest extends \PHPUnit_Framework_Testcase
         $this->assertSame('bar', $this->request->getPost('foo'));
     }
 
+    public function testRetrievesDefaultValueFromPostGlobal()
+    {
+        $this->assertSame('default', $this->request->getPost('false', 'default'));
+    }
+
     public function testRetrievesEntirePostArray()
     {
         $_POST['foo'] = 'bar';
@@ -120,6 +125,34 @@ Class RequestTest extends \PHPUnit_Framework_Testcase
         $this->assertArrayHasKey('bar', $result);
         $this->assertSame('bar', $result['foo']);
         $this->assertSame('baz', $result['bar']);
+    }
+
+    public function testRetrievesSingleValueFromGetGlobal()
+    {
+        $_GET['testvalue'] = 'abcdefg';
+        $this->assertSame('abcdefg', $this->request->getQuery('testvalue'));
+
+        $_GET['testvalue2'] = 'Breakfast';
+        $this->assertSame('Breakfast', $this->request->getQuery('testvalue2'));
+    }
+
+    public function testRetrievesDefaultValueFromGetGlobal()
+    {
+        $this->assertSame('default', $this->request->getQuery('false', 'default'));
+    }
+
+    public function testRetrievesEntireGetArray()
+    {
+        $_GET['id'] = '123';
+        $_GET['title'] = 'example title';
+
+        $result = $this->request->getQuery();
+        
+        $this->assertCount(2, $result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('title', $result);
+        $this->assertSame('123', $result['id']);
+        $this->assertSame('example title', $result['title']);
     }
 
     public function testSetsTheBaseUri()
@@ -146,6 +179,13 @@ Class RequestTest extends \PHPUnit_Framework_Testcase
         $request = new Request('http://localhost/home');
         $this->assertSame('http://localhost/home', $request->getRequestUri());
         $this->assertSame('/www/home/index.php', $request->getBaseUri());
+    }
+
+    public function testIsXmlHttpRequest()
+    {
+        $this->assertFalse($this->request->isXmlHttpRequest());
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $this->assertTrue($this->request->isXmlHttpRequest());
     }
 
 }
